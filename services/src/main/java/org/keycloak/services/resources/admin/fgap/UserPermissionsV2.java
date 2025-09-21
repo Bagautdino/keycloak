@@ -157,20 +157,8 @@ class UserPermissionsV2 extends UserPermissions {
             return true;
         }
 
-        // Check direct USERS.reset-password permission
-        if (eval.hasPermission(new UserModelRecord(user), null, AdminPermissionsSchema.RESET_PASSWORD)) {
-            return true;
-        }
-
-        // Check GROUPS.reset-password-members permission for user's groups
-        // Since alias mechanism works within resource types, we need manual cross-resource-type checking
-        if (user.getGroupsStream()
-                .filter(group -> group != null)
-                .anyMatch(group -> eval.hasPermission(new GroupModelRecord(group), null, AdminPermissionsSchema.RESET_PASSWORD_MEMBERS))) {
-            return true;
-        }
-
-        return false;
+        // Check USERS.reset-password permission (will automatically check GROUPS.reset-password-members via alias)
+        return eval.hasPermission(new UserModelRecord(user), null, AdminPermissionsSchema.RESET_PASSWORD);
     }
 
     @Override
